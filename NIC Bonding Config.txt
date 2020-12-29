@@ -1,0 +1,44 @@
+modprobe bonding                              # For bonding to work properly we need to load bonding driver named bonding
+modinfo bonding                               # Verify if driver is loaded:
+uuidgen                                       # Check UUID's for Network Interfaces
+
+Config for Bonding Interfaces                 # Create ifcfg-bond0 under /etc/sysconfig/network-script/
+
+TYPE=Bond   #Interface type set to bond
+BOOTPROTO=static
+BONDING_MASTER=yes
+BONDING_OPTS="mode=1 miimon=100"  #mode 1 means active-backup 
+DEFROUTE=yes 
+IPADDR=192.168.122.100  #IP address of bond0 interface
+NETMASK=255.255.255.0 
+GATEWAY=192.168.122.1
+IPV4_FAILURE_FATAL=no 
+IPV6INIT=no
+NAME=bond0
+DEVICE=bond0
+ONBOOT=yes
+
+Config for Bonding Interfaces               # Create ifcfg-eth1/2 under /etc/sysconfig/network-script/
+
+TYPE=Ethernet
+MASTER=bond0
+SLAVE=yes
+NAME=eth1
+UUID=6f19ffe4-99d1-4a13-92b3eb602172869b    # Replace with your generated UUID
+DEVICE=eth1
+ONBOOT=yes
+
+ 
+TYPE=Ethernet
+MASTER=bond0
+SLAVE=yes
+NAME=eth2
+UUID=d46459b8-4500-9a0b-79f0c65ca109        # Replace with your generated UUID
+DEVICE=eth2
+ONBOOT=yes
+
+Systemctl restart NetworkManager            # Restart the network service
+
+cat /proc/net/bonding/bond0                 # Test & Verify bond interface
+
+down one of the slave interface             # Fault tolerance testing
